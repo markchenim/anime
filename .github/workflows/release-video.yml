@@ -32,13 +32,6 @@ jobs:
         run: npm run render
         working-directory: crow-water
 
-      - name: Find rendered MP4
-        id: find-video
-        run: |
-          VIDEO=$(find crow-water/renders -name "*.mp4" -type f | head -1)
-          echo "video_path=${VIDEO}" >> $GITHUB_OUTPUT
-          echo "Found video: ${VIDEO}"
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -50,7 +43,7 @@ jobs:
 
             - **项目**: crow-water
             - **提交**: ${{ github.sha }}
-          files: ${{ steps.find-video.outputs.video_path }}
+          files: crow-water/renders/*.mp4
           generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
