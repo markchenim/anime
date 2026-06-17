@@ -1,0 +1,50 @@
+name: Release Video on Tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  render-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: crow-water
+
+      - name: Render video
+        run: npm run render
+        working-directory: crow-water
+
+      - name: Find rendered MP4
+        id: find-video
+        run: |
+          VIDEO=$(find crow-water/renders -name "*.mp4" -type f | head -1)
+          echo "video_path=${VIDEO}" >> $GITHUB_OUTPUT
+          echo "Found video: ${VIDEO}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 乌鸦喝水 — ${{ github.ref_name }}
+
+            自动渲染的动画视频。
+
+            - **项目**: crow-water
+            - **提交**: ${{ github.sha }}
+          files: ${{ steps.find-video.outputs.video_path }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Noto Sans SC';
+        src: url('https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYk.woff2') format('woff2');
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Noto Sans SC';
+        src: url('https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYk.woff2') format('woff2');
+        font-weight: 900;
+        font-display: swap;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      body { font-family: 'Noto Sans SC', sans-serif; }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: linear-gradient(180deg, #87CEEB 0%, #E0F0FF 40%, #C8E6C9 40%, #8BC34A 60%, #689F38 100%);
+        overflow: hidden;
+      }
+
+      #sun {
+        position: absolute; top: 60px; right: 180px;
+        width: 140px; height: 140px;
+        background: radial-gradient(circle, #FFF9C4 20%, #FFD54F 45%, #FFA726 70%, #FF9800 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 80px 30px rgba(255,213,79,0.5), 0 0 160px 60px rgba(255,183,77,0.25), 0 0 240px 100px rgba(255,152,0,0.12);
+      }
+
+      .cloud {
+        position: absolute;
+        background: #fff;
+        border-radius: 50px;
+        opacity: 0.85;
+        filter: blur(1px);
+      }
+      #cloud1 { top: 100px; left: 200px; width: 200px; height: 60px; }
+      #cloud1::before { content:''; position:absolute; top:-30px; left:40px; width:80px; height:80px; background:#fff; border-radius:50%; }
+      #cloud1::after { content:''; position:absolute; top:-20px; left:100px; width:60px; height:60px; background:#fff; border-radius:50%; }
+      #cloud2 { top: 160px; left: 1400px; width: 160px; height: 50px; }
+      #cloud2::before { content:''; position:absolute; top:-25px; left:30px; width:65px; height:65px; background:#fff; border-radius:50%; }
+      #cloud3 { top: 60px; left: 700px; width: 140px; height: 42px; opacity: 0.6; }
+      #cloud3::before { content:''; position:absolute; top:-22px; left:25px; width:55px; height:55px; background:#fff; border-radius:50%; }
+      #cloud3::after { content:''; position:absolute; top:-15px; left:70px; width:42px; height:42px; background:#fff; border-radius:50%; }
+
+      #pitcher {
+        position: absolute;
+        bottom: 180px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 300px;
+      }
+      #pitcher-body {
+        position: absolute;
+        bottom: 0;
+        left: 10px;
+        width: 160px;
+        height: 260px;
+        background: linear-gradient(135deg, #A1887F 0%, #795548 50%, #6D4C41 100%);
+        border-radius: 10px 10px 40px 40px;
+        border: 3px solid #5D4037;
+        overflow: hidden;
+      }
+      #pitcher-neck {
+        position: absolute;
+        bottom: 258px;
+        left: 40px;
+        width: 100px;
+        height: 50px;
+        background: linear-gradient(135deg, #A1887F 0%, #795548 50%, #6D4C41 100%);
+        border-radius: 5px 5px 0 0;
+        border: 3px solid #5D4037;
+        border-bottom: none;
+      }
+      #pitcher-rim {
+        position: absolute;
+        bottom: 300px;
+        left: 30px;
+        width: 120px;
+        height: 12px;
+        background: #5D4037;
+        border-radius: 6px 6px 0 0;
+      }
+      #pitcher-handle {
+        position: absolute;
+        bottom: 100px;
+        right: -30px;
+        width: 50px;
+        height: 80px;
+        border: 8px solid #5D4037;
+        border-left: none;
+        border-radius: 0 30px 30px 0;
+      }
+
+      #water {
+        position: absolute;
+        bottom: 0;
+        left: 3px;
+        width: 154px;
+        height: 60px;
+        background: linear-gradient(180deg, rgba(100,181,246,0.9) 0%, rgba(33,150,243,0.85) 30%, rgba(25,118,210,0.95) 100%);
+        border-radius: 0 0 37px 37px;
+        overflow: hidden;
+      }
+      #water::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 0;
+        width: 200%;
+        height: 6px;
+        background: rgba(255,255,255,0.35);
+        border-radius: 50%;
+        animation: waterShine 2s ease-in-out infinite;
+      }
+      @keyframes waterShine {
+        0%, 100% { transform: translateX(-20%); opacity: 0.3; }
+        50% { transform: translateX(10%); opacity: 0.7; }
+      }
+
+      .pebble {
+        position: absolute;
+        border-radius: 50% 45% 55% 50%;
+        opacity: 0;
+      }
+      #pebble1 { width: 22px; height: 20px; background: linear-gradient(135deg, #9E9E9E, #616161); }
+      #pebble2 { width: 18px; height: 16px; background: linear-gradient(135deg, #BDBDBD, #757575); }
+      #pebble3 { width: 24px; height: 22px; background: linear-gradient(135deg, #8D6E63, #5D4037); }
+      #pebble4 { width: 20px; height: 18px; background: linear-gradient(135deg, #A1887F, #6D4C41); }
+      #pebble5 { width: 16px; height: 15px; background: linear-gradient(135deg, #BCAAA4, #8D6E63); }
+
+      .ground-pebble {
+        position: absolute;
+        border-radius: 50% 45% 55% 50%;
+      }
+      #gp1 { bottom: 175px; left: calc(50% + 200px); width: 24px; height: 22px; background: linear-gradient(135deg, #9E9E9E, #616161); }
+      #gp2 { bottom: 170px; left: calc(50% + 240px); width: 20px; height: 18px; background: linear-gradient(135deg, #BDBDBD, #757575); }
+      #gp3 { bottom: 178px; left: calc(50% + 180px); width: 26px; height: 24px; background: linear-gradient(135deg, #8D6E63, #5D4037); }
+      #gp4 { bottom: 172px; left: calc(50% + 270px); width: 22px; height: 20px; background: linear-gradient(135deg, #A1887F, #6D4C41); }
+      #gp5 { bottom: 176px; left: calc(50% + 160px); width: 18px; height: 16px; background: linear-gradient(135deg, #BCAAA4, #8D6E63); }
+
+      #crow {
+        position: absolute;
+        bottom: 200px;
+        left: 1100px;
+        width: 180px;
+        height: 140px;
+        filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.35));
+      }
+      #crow-body {
+        position: absolute;
+        bottom: 10px;
+        left: 40px;
+        width: 110px;
+        height: 75px;
+        background:
+          radial-gradient(ellipse at 60% 30%, #3a3a3a 0%, transparent 50%),
+          radial-gradient(ellipse at 30% 70%, #2a2a2a 0%, transparent 40%),
+          linear-gradient(160deg, #1c1c1c 0%, #0d0d0d 40%, #050505 100%);
+        border-radius: 55% 60% 45% 40%;
+        box-shadow: inset -5px -8px 15px rgba(60,60,60,0.15), inset 3px 3px 10px rgba(80,80,80,0.1);
+      }
+      #crow-chest {
+        position: absolute;
+        bottom: 10px;
+        left: 35px;
+        width: 50px;
+        height: 60px;
+        background: radial-gradient(ellipse at 50% 40%, #2a2a2a 0%, #111 80%);
+        border-radius: 50% 30% 50% 50%;
+        opacity: 0.7;
+      }
+      #crow-neck {
+        position: absolute;
+        bottom: 60px;
+        left: 30px;
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(ellipse at 50% 60%, #1a1a1a 0%, #0a0a0a 100%);
+        border-radius: 40% 50% 30% 50%;
+      }
+      #crow-head {
+        position: absolute;
+        bottom: 85px;
+        left: 10px;
+        width: 52px;
+        height: 48px;
+        background:
+          radial-gradient(circle at 40% 35%, #2a2a2a 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, #151515 0%, #080808 100%);
+        border-radius: 50% 55% 45% 50%;
+        transform-origin: 50% 80%;
+      }
+      #crow-crown {
+        position: absolute;
+        bottom: 118px;
+        left: 15px;
+        width: 30px;
+        height: 18px;
+        background: linear-gradient(170deg, #1a1a1a 0%, #0a0a0a 100%);
+        border-radius: 50% 60% 20% 40%;
+        transform: rotate(-10deg);
+      }
+      #crow-eye {
+        position: absolute;
+        top: 14px;
+        left: 10px;
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle at 45% 45%, #fff 0%, #e8e8e8 60%, #ccc 100%);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+      #crow-pupil {
+        position: absolute;
+        top: 3px;
+        left: 4px;
+        width: 7px;
+        height: 7px;
+        background: radial-gradient(circle at 40% 40%, #1a1a1a 0%, #000 100%);
+        border-radius: 50%;
+      }
+      #crow-eye-highlight {
+        position: absolute;
+        top: 3px;
+        left: 5px;
+        width: 3px;
+        height: 3px;
+        background: #fff;
+        border-radius: 50%;
+      }
+      #crow-beak {
+        position: absolute;
+        bottom: 88px;
+        left: -18px;
+        width: 30px;
+        height: 12px;
+        background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 40%, #111 100%);
+        border-radius: 2px 18px 12px 2px;
+        transform-origin: right center;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      }
+      #crow-beak::after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 2px;
+        width: 22px;
+        height: 1px;
+        background: #333;
+        border-radius: 1px;
+      }
+      #crow-wing-l {
+        position: absolute;
+        bottom: 30px;
+        left: 20px;
+        width: 70px;
+        height: 40px;
+        background:
+          linear-gradient(170deg, #1a1a1a 0%, #0d0d0d 50%, #050505 100%);
+        border-radius: 50% 5% 55% 50%;
+        transform-origin: right top;
+        box-shadow: inset 0 -3px 8px rgba(50,50,50,0.2);
+      }
+      #crow-wing-l::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 20px;
+        background: linear-gradient(180deg, transparent 0%, rgba(30,30,30,0.5) 100%);
+        border-radius: 0 0 50% 50%;
+      }
+      #crow-wing-r {
+        position: absolute;
+        bottom: 35px;
+        left: 50px;
+        width: 60px;
+        height: 32px;
+        background: linear-gradient(170deg, #151515 0%, #080808 100%);
+        border-radius: 5% 50% 50% 50%;
+        transform-origin: left top;
+      }
+      #crow-wing-r::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 16px;
+        background: linear-gradient(180deg, transparent 0%, rgba(20,20,20,0.4) 100%);
+        border-radius: 0 0 50% 50%;
+      }
+      #crow-tail {
+        position: absolute;
+        bottom: 15px;
+        right: -20px;
+        width: 50px;
+        height: 22px;
+        background: linear-gradient(170deg, #161616 0%, #080808 100%);
+        border-radius: 5% 55% 50% 10%;
+      }
+      #crow-tail::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        right: 5px;
+        width: 40px;
+        height: 15px;
+        background: linear-gradient(170deg, #111 0%, #060606 100%);
+        border-radius: 5% 50% 50% 10%;
+        transform: rotate(-5deg);
+      }
+      #crow-leg-l, #crow-leg-r {
+        position: absolute;
+        bottom: -8px;
+        width: 5px;
+        height: 22px;
+        background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-radius: 2px;
+      }
+      #crow-leg-l { left: 60px; }
+      #crow-leg-r { left: 85px; }
+      #crow-leg-l::after, #crow-leg-r::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: -4px;
+        width: 13px;
+        height: 5px;
+        background: #1a1a1a;
+        border-radius: 2px 6px 2px 2px;
+      }
+
+      #thought {
+        position: absolute;
+        top: 80px;
+        left: 1100px;
+        opacity: 0;
+      }
+      #thought-bubble {
+        background: #fff;
+        border-radius: 30px;
+        padding: 20px 30px;
+        font-size: 28px;
+        color: #333;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        position: relative;
+        white-space: nowrap;
+      }
+      #thought-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 40px;
+        width: 0; height: 0;
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-top: 20px solid #fff;
+      }
+      .thought-dot {
+        position: absolute;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      #td1 { width: 16px; height: 16px; bottom: -30px; left: 30px; }
+      #td2 { width: 10px; height: 10px; bottom: -45px; left: 20px; }
+
+      #title {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 96px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 4px 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3);
+        letter-spacing: 20px;
+        opacity: 0;
+        z-index: 10;
+      }
+      #subtitle {
+        position: absolute;
+        top: calc(50% + 80px);
+        left: 50%;
+        font-size: 32px;
+        color: rgba(255,255,255,0.8);
+        letter-spacing: 8px;
+        opacity: 0;
+        z-index: 10;
+      }
+
+      #moral {
+        position: absolute;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 36px;
+        font-weight: 700;
+        color: #5D4037;
+        background: rgba(255,255,255,0.9);
+        padding: 16px 40px;
+        border-radius: 20px;
+        opacity: 0;
+        z-index: 10;
+      }
+
+      .splash-drop {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: rgba(100,181,246,0.85);
+        border-radius: 50%;
+        opacity: 0;
+        box-shadow: 0 0 4px rgba(100,181,246,0.5);
+      }
+
+      #ripple {
+        position: absolute;
+        bottom: 238px;
+        left: calc(50% + 3px);
+        width: 0;
+        height: 0;
+        border: 2px solid rgba(100,181,246,0.6);
+        border-radius: 50%;
+        opacity: 0;
+        transform: translateX(-50%);
+      }
+
+      .ground-shadow {
+        position: absolute;
+        background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      #crow-shadow {
+        bottom: 170px;
+        left: 1100px;
+        width: 100px;
+        height: 20px;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-t6dl" id="stage" data-composition-id="crow-water" data-start="0" data-duration="18" data-width="1920" data-height="1080">
+      <!-- Title -->
+      <div data-hf-id="hf-2rxv" id="title" class="clip" data-start="0" data-duration="3" data-track-index="1">乌鸦喝水</div>
+      <div data-hf-id="hf-p2va" id="subtitle" class="clip" data-start="0.5" data-duration="2.5" data-track-index="22">The Crow Drinks Water</div>
+
+      <!-- Sky -->
+      <div data-hf-id="hf-usfz" id="sun" class="clip" data-start="0" data-duration="18" data-track-index="0"></div>
+      <div data-hf-id="hf-jecr" id="cloud1" class="clip" data-start="0" data-duration="18" data-track-index="20"></div>
+      <div data-hf-id="hf-gbil" id="cloud2" class="clip" data-start="0" data-duration="18" data-track-index="21"></div>
+      <div data-hf-id="hf-m3xq" id="cloud3" class="cloud clip" data-start="0" data-duration="18" data-track-index="23"></div>
+
+      <!-- Pitcher -->
+      <div data-hf-id="hf-w301" id="pitcher" class="clip" data-start="2" data-duration="16" data-track-index="14">
+        <div data-hf-id="hf-rllj" id="pitcher-rim"></div>
+        <div data-hf-id="hf-nxns" id="pitcher-neck"></div>
+        <div data-hf-id="hf-vq99" id="pitcher-body">
+          <div data-hf-id="hf-k50a" id="water">
+          </div>
+        </div>
+        <div data-hf-id="hf-92mb" id="pitcher-handle"></div>
+        <div data-hf-id="hf-qvrt" class="splash-drop" id="sp1" style="top:20px;left:60px;"></div>
+        <div data-hf-id="hf-n6ss" class="splash-drop" id="sp2" style="top:15px;left:80px;"></div>
+        <div data-hf-id="hf-yfwb" class="splash-drop" id="sp3" style="top:25px;left:100px;"></div>
+        <div data-hf-id="hf-am8u" class="splash-drop" id="sp4" style="top:10px;left:70px;"></div>
+        <div data-hf-id="hf-4ej5" class="splash-drop" id="sp5" style="top:18px;left:90px;"></div>
+        <div data-hf-id="hf-l3gf" id="ripple"></div>
+      </div>
+
+      <!-- Ground pebbles -->
+      <div data-hf-id="hf-4pvg" id="gp1" class="ground-pebble clip" data-start="5" data-duration="13" data-track-index="3"></div>
+      <div data-hf-id="hf-puji" id="gp2" class="ground-pebble clip" data-start="5" data-duration="13" data-track-index="4"></div>
+      <div data-hf-id="hf-qju8" id="gp3" class="ground-pebble clip" data-start="5" data-duration="13" data-track-index="5"></div>
+      <div data-hf-id="hf-4qkm" id="gp4" class="ground-pebble clip" data-start="5" data-duration="13" data-track-index="6"></div>
+      <div data-hf-id="hf-cwbw" id="gp5" class="ground-pebble clip" data-start="5" data-duration="13" data-track-index="7"></div>
+
+      <!-- Pebbles -->
+      <div data-hf-id="hf-111k" id="pebble1" class="pebble clip" data-start="5" data-duration="13" data-track-index="8"></div>
+      <div data-hf-id="hf-n7hw" id="pebble2" class="pebble clip" data-start="5" data-duration="13" data-track-index="9"></div>
+      <div data-hf-id="hf-z5e5" id="pebble3" class="pebble clip" data-start="5" data-duration="13" data-track-index="10"></div>
+      <div data-hf-id="hf-fg79" id="pebble4" class="pebble clip" data-start="5" data-duration="13" data-track-index="11"></div>
+      <div data-hf-id="hf-dsu1" id="pebble5" class="pebble clip" data-start="5" data-duration="13" data-track-index="12"></div>
+
+      <!-- Crow -->
+      <div data-hf-id="hf-drwa" id="crow" class="clip" data-start="2" data-duration="16" data-track-index="15">
+        <div data-hf-id="hf-3gxp" id="crow-body"></div>
+        <div data-hf-id="hf-s21g" id="crow-chest"></div>
+        <div data-hf-id="hf-6u1n" id="crow-wing-l"></div>
+        <div data-hf-id="hf-uf0l" id="crow-wing-r"></div>
+        <div data-hf-id="hf-kobr" id="crow-tail"></div>
+        <div data-hf-id="hf-ffdk" id="crow-neck"></div>
+        <div data-hf-id="hf-z6c7" id="crow-head">
+          <div data-hf-id="hf-3lk8" id="crow-eye"><div data-hf-id="hf-2s87" id="crow-pupil"></div><div data-hf-id="hf-jbl3" id="crow-eye-highlight"></div></div>
+        </div>
+        <div data-hf-id="hf-5xb2" id="crow-crown"></div>
+        <div data-hf-id="hf-7vrq" id="crow-beak"></div>
+        <div data-hf-id="hf-cyps" id="crow-leg-l"></div>
+        <div data-hf-id="hf-bfae" id="crow-leg-r"></div>
+      </div>
+
+      <!-- Thought bubble -->
+      <div data-hf-id="hf-41c6" id="thought" class="clip" data-start="4" data-duration="2" data-track-index="16">
+        <div data-hf-id="hf-dwbu" id="thought-bubble">有办法了！</div>
+        <div data-hf-id="hf-fw5o" id="td1" class="thought-dot"></div>
+        <div data-hf-id="hf-ok1j" id="td2" class="thought-dot"></div>
+      </div>
+
+      <!-- Moral -->
+      <div data-hf-id="hf-g10v" id="moral" class="clip" data-start="16" data-duration="2" data-track-index="17">遇事要善于动脑筋想办法</div>
+      <!-- Crow shadow -->
+      <div data-hf-id="hf-ssdx" id="crow-shadow" class="ground-shadow clip" data-start="2" data-duration="16" data-track-index="24"></div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Seeded PRNG for deterministic renders
+      function mulberry32(a) {
+        return function() {
+          a |= 0; a = a + 0x6D2B79F5 | 0;
+          var t = Math.imul(a ^ a >>> 15, 1 | a);
+          t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      }
+      var rand = mulberry32(42);
+
+      // ===== Sun glow pulse =====
+      tl.fromTo("#sun", { boxShadow: "0 0 80px 30px rgba(255,213,79,0.5), 0 0 160px 60px rgba(255,183,77,0.25), 0 0 240px 100px rgba(255,152,0,0.12)" },
+        { boxShadow: "0 0 100px 40px rgba(255,213,79,0.6), 0 0 180px 70px rgba(255,183,77,0.35), 0 0 260px 120px rgba(255,152,0,0.18)", duration: 2, ease: "sine.inOut", yoyo: true, repeat: 8 }, 0);
+
+      // ===== Title (0-3s) =====
+      tl.fromTo("#title", { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.3, rotation: -5 },
+        { xPercent: -50, yPercent: -50, opacity: 1, scale: 1, rotation: 0, duration: 1.2, ease: "elastic.out(1, 0.5)" }, 0);
+      tl.fromTo("#subtitle", { xPercent: -50, opacity: 0, y: 40 },
+        { xPercent: -50, opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.6);
+      // Title subtle float while visible (shortened to avoid overlap with fade-out)
+      tl.to("#title", { xPercent: -50, yPercent: -50, y: -8, duration: 1.0, ease: "sine.inOut" }, 1.2);
+      tl.to("#title", { xPercent: -50, yPercent: -50, opacity: 0, y: -60, scale: 0.8, duration: 0.7, ease: "power3.in" }, 2.4);
+      tl.to("#subtitle", { xPercent: -50, opacity: 0, y: -40, duration: 0.6, ease: "power2.in" }, 2.4);
+
+      // ===== Clouds drift (smooth sine) =====
+      tl.to("#cloud1", { x: 60, duration: 18, ease: "sine.inOut", yoyo: true, repeat: 0 }, 0);
+      tl.to("#cloud2", { x: -50, duration: 20, ease: "sine.inOut", yoyo: true, repeat: 0 }, 0);
+      tl.to("#cloud3", { x: 35, duration: 16, ease: "sine.inOut", yoyo: true, repeat: 0 }, 0);
+
+      // ===== Crow flies in (2-3.8s) - improved arc trajectory =====
+      tl.fromTo("#crow", { x: -1300, y: -300, rotation: -10, scale: 0.85 },
+        { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.8, ease: "power3.out" }, 2);
+      // Shadow follows crow
+      tl.fromTo("#crow-shadow", { x: -1300, y: 0, opacity: 0, scale: 0.5 },
+        { x: 0, y: 0, opacity: 0.6, scale: 1, duration: 1.8, ease: "power3.out" }, 2);
+
+      // Wing flapping - more dynamic with staggered timing
+      tl.to("#crow-wing-l", { rotation: -40, duration: 0.22, ease: "power2.inOut", yoyo: true, repeat: 5 }, 2);
+      tl.to("#crow-wing-r", { rotation: 30, duration: 0.22, ease: "power2.inOut", yoyo: true, repeat: 5 }, 2.08);
+
+      // Head bob during flight
+      tl.to("#crow-head", { rotation: -5, duration: 0.3, ease: "power1.inOut", yoyo: true, repeat: 3 }, 2);
+      tl.to("#crow-tail", { rotation: 5, duration: 0.35, ease: "power1.inOut", yoyo: true, repeat: 3 }, 2);
+
+      // ===== Crow landing & approaches pitcher (3.8-5s) =====
+      // Hop towards pitcher with anticipation
+      tl.to("#crow", { x: -320, y: -10, duration: 0.6, ease: "power2.in" }, 3.8);
+      tl.to("#crow", { x: -300, y: 0, duration: 0.3, ease: "bounce.out" }, 4.4);
+      // Shadow hops too
+      tl.to("#crow-shadow", { x: -320, scaleX: 0.8, duration: 0.6, ease: "power2.in" }, 3.8);
+      tl.to("#crow-shadow", { x: -300, scaleX: 1, duration: 0.3, ease: "bounce.out" }, 4.4);
+
+      // Examine pitcher - two quick hops (explicit keyframes with overwrite to avoid overlap)
+      tl.to("#crow", { y: -20, duration: 0.15, ease: "power2.out", overwrite: "auto" }, 4.0);
+      tl.to("#crow", { y: 0, duration: 0.15, ease: "power2.in", overwrite: "auto" }, 4.15);
+      tl.to("#crow", { y: -18, duration: 0.15, ease: "power2.out", overwrite: "auto" }, 4.44);
+      tl.to("#crow", { y: 0, duration: 0.15, ease: "power2.in", overwrite: "auto" }, 4.59);
+
+      // Head tilt - look at water
+      tl.to("#crow-head", { rotation: -12, duration: 0.4, ease: "power2.inOut" }, 4.7);
+      tl.to("#crow", { rotation: -18, duration: 0.4, ease: "power1.inOut" }, 4.7);
+
+      // ===== Thought bubble (4.3-5.8s) =====
+      tl.fromTo("#thought", { opacity: 0, scale: 0.2, y: 15 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(2.5)" }, 4.3);
+      // Thought bubble gentle float — starts after entrance completes (4.9s)
+      tl.to("#thought", { y: -8, duration: 0.6, ease: "sine.inOut" }, 4.95);
+      // Fade-out starts after float finishes (5.1s)
+      tl.to("#thought", { opacity: 0, scale: 0.4, y: -20, duration: 0.4, ease: "power2.in" }, 5.8);
+      tl.to("#crow-head", { rotation: 0, duration: 0.35, ease: "power2.out" }, 5.5);
+      tl.to("#crow", { rotation: 0, duration: 0.35, ease: "power2.out" }, 5.5);
+
+      // ===== Body breathing idle (5.5-14s) =====
+      tl.to("#crow-body", { scaleY: 1.04, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 5 }, 5.5);
+
+      // ===== Drop pebbles (6-13s) - improved physics =====
+      var offsets = [
+        { dx: 0, bw: 300 },
+        { dx: -5, bw: 295 },
+        { dx: 3, bw: 310 },
+        { dx: -3, bw: 305 },
+        { dx: 2, bw: 298 }
+      ];
+
+      for (var i = 0; i < 5; i++) {
+        var t = 6 + i * 1.4;
+        var gpId = "#gp" + (i + 1);
+        var pId = "#pebble" + (i + 1);
+        var spId = "#sp" + (i + 1);
+        var dx = offsets[i].dx;
+        var bw = offsets[i].bw;
+
+        // Ground pebble fades out with a pop
+        tl.to(gpId, { opacity: 0, scale: 1.3, duration: 0.15, ease: "power2.in" }, t);
+        tl.to(gpId, { scale: 0, duration: 0.1 }, t + 0.15);
+
+        // Pebble appears near crow beak then arcs to pitcher
+        tl.set(pId, { opacity: 1, left: 1080, bottom: 200, scale: 0.6 }, t + 0.25);
+        tl.to(pId, { scale: 1, duration: 0.2, ease: "power2.out" }, t + 0.25);
+        // Arc trajectory with bezier-like two-stage movement
+        tl.to(pId, { left: 1030 + dx, bottom: 310 + i * 2, duration: 0.25, ease: "power2.in" }, t + 0.45);
+        tl.to(pId, { left: 960 + dx, bottom: bw - 20, duration: 0.2, ease: "power2.out" }, t + 0.7);
+        // Final drop with slight bounce
+        tl.to(pId, { bottom: 185 + i * 8, left: 960 + dx, duration: 0.35, ease: "bounce.out" }, t + 0.9);
+
+        // Splash drops - separate appearance and disappearance cleanly
+        tl.set(spId, { opacity: 0, y: 0, scale: 0, x: 0 }, t + 1.2);
+        tl.to(spId, { opacity: 1, y: -25 - i * 3, x: dx * 4, scale: 1.2, duration: 0.15, ease: "power2.out" }, t + 1.2);
+        tl.to(spId, { opacity: 0, y: 15, x: dx * 2, scale: 0.3, duration: 0.3, ease: "power2.in", overwrite: "auto" }, t + 1.35);
+
+        // Ripple effect - expanding rings
+        tl.fromTo("#ripple", { opacity: 0.7, width: 0, height: 0, borderWidth: 3 },
+          { opacity: 0, width: 70 + i * 5, height: 24 + i * 2, borderWidth: 0, duration: 0.7, ease: "power2.out" }, t + 1.25);
+      }
+
+      // Water rises with slight overshoot for realism
+      var waterHeights = [90, 130, 170, 210, 245];
+      for (var j = 0; j < 5; j++) {
+        tl.to("#water", { height: waterHeights[j], duration: 0.7, ease: "power2.out" }, 6.8 + j * 1.4);
+      }
+
+      // ===== Crow drinks (14-15.8s) - more detailed =====
+      // Lean down to drink
+      tl.to("#crow", { x: -240, y: -175, rotation: -22, duration: 0.6, ease: "power3.inOut" }, 14);
+      tl.to("#crow-shadow", { x: -240, y: -10, opacity: 0.3, scaleX: 0.6, duration: 0.6, ease: "power3.inOut" }, 14);
+      tl.to("#crow-head", { rotation: -20, duration: 0.5, ease: "power2.inOut" }, 14.1);
+
+      // Beak open/close drinking animation
+      tl.to("#crow-beak", { rotation: -15, duration: 0.15, ease: "power1.inOut" }, 14.6);
+      tl.to("#crow-beak", { rotation: -5, duration: 0.12, ease: "power1.inOut" }, 14.8);
+      tl.to("#crow-beak", { rotation: -15, duration: 0.15, ease: "power1.inOut" }, 15.0);
+      tl.to("#crow-beak", { rotation: -5, duration: 0.12, ease: "power1.inOut" }, 15.2);
+      tl.to("#crow-beak", { rotation: -15, duration: 0.15, ease: "power1.inOut" }, 15.4);
+      tl.to("#crow-beak", { rotation: 0, duration: 0.2, ease: "elastic.out(1, 0.4)" }, 15.6);
+
+      // Water level drops as crow drinks (staggered to avoid overlap)
+      tl.to("#water", { height: 215, duration: 0.35, ease: "power1.inOut" }, 14.6);
+      tl.to("#water", { height: 195, duration: 0.35, ease: "power1.inOut" }, 15.0);
+      tl.to("#water", { height: 175, duration: 0.35, ease: "power1.inOut" }, 15.4);
+
+      // Stand back up satisfied
+      tl.to("#crow-head", { rotation: 0, duration: 0.4, ease: "power2.out" }, 15.6);
+      tl.to("#crow", { x: -300, y: 0, rotation: 0, duration: 0.5, ease: "back.out(1.2)" }, 15.7);
+      tl.to("#crow-shadow", { x: -300, y: 0, opacity: 0.6, scaleX: 1, duration: 0.5, ease: "back.out(1.2)" }, 15.7);
+
+      // Happy hop after drinking (explicit keyframes with overwrite)
+      tl.to("#crow", { y: -25, duration: 0.18, ease: "power2.out", overwrite: "auto" }, 16.0);
+      tl.to("#crow", { y: 0, duration: 0.3, ease: "bounce.out", overwrite: "auto" }, 16.2);
+
+      // ===== Moral (16.3-18s) =====
+      tl.fromTo("#moral", { xPercent: -50, opacity: 0, y: 40, scale: 0.9 },
+        { xPercent: -50, opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.5)" }, 16.3);
+      // Moral subtle glow pulse
+      tl.to("#moral", { boxShadow: "0 0 30px rgba(93,64,55,0.3), 0 8px 32px rgba(0,0,0,0.1)", duration: 0.8, ease: "power2.out" }, 17.2);
+
+      window.__timelines["crow-water"] = tl;
+    </script>
+  </body>
+</html>
