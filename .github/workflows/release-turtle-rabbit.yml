@@ -1,9 +1,9 @@
-name: Release Video on Tag
+name: Release Turtle Rabbit
 
 on:
   push:
     tags:
-      - "v*"
+      - "v*-turtle-rabbit"
 
 permissions:
   contents: write
@@ -26,24 +26,24 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: crow-water
+        working-directory: turtle-rabbit
 
       - name: Render video
         run: npm run render
-        working-directory: crow-water
+        working-directory: turtle-rabbit
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ github.ref_name }}
+          name: 龟兔赛跑 — ${{ github.ref_name }}
           body: |
-            ## 乌鸦喝水 — ${{ github.ref_name }}
+            ## 🐢🐰 龟兔赛跑 — ${{ github.ref_name }}
 
             自动渲染的动画视频。
 
-            - **项目**: crow-water
+            - **项目**: turtle-rabbit
             - **提交**: ${{ github.sha }}
-          files: crow-water/renders/*.mp4
+          files: turtle-rabbit/renders/*.mp4
           generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

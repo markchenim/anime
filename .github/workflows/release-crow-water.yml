@@ -1,0 +1,49 @@
+name: Release Crow Water
+
+on:
+  push:
+    tags:
+      - "v*-crow-water"
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: crow-water
+
+      - name: Render video
+        run: npm run render
+        working-directory: crow-water
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: 乌鸦喝水 — ${{ github.ref_name }}
+          body: |
+            ## 🐦 乌鸦喝水 — ${{ github.ref_name }}
+
+            自动渲染的动画视频。
+
+            - **项目**: crow-water
+            - **提交**: ${{ github.sha }}
+          files: crow-water/renders/*.mp4
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
