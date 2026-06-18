@@ -1,5 +1,5 @@
 """
-Mix edge-tts audio files into the rendered video.
+Mix edge-tts audio files into the rendered turtle-rabbit video.
 """
 import subprocess
 import os
@@ -35,9 +35,8 @@ dur_str = subprocess.check_output([
 video_dur = float(dur_str)
 print(f"Video duration: {video_dur}s")
 
-filter_parts = []
 inputs = ["-i", video_path]
-audio_count = 0
+filter_parts = []
 
 for fname, start_sec in cues:
     audio_file = os.path.join(AUDIO_DIR, f"{fname}.mp3")
@@ -47,23 +46,25 @@ for fname, start_sec in cues:
     idx = len(inputs) // 2
     inputs.extend(["-i", audio_file])
     delay_ms = int(start_sec * 1000)
-    filter_parts.append(f"[{idx}:a]adelay={delay_ms}|{delay_ms}[a{idx}]")
-    audio_count += 1
+    filter_parts.append(f"[{idx}:a]adelay={delay_ms}:all=1[a{idx}]")
+    print(f"  {fname}: delay={delay_ms}ms")
 
 if not filter_parts:
     print("No audio files to mix!")
     exit(1)
 
-amix_labels = "".join(f"[a{i+1}]" for i in range(audio_count))
+audio_count = len(filter_parts)
+amix_inputs = "".join(f"[a{i+1}]" for i in range(audio_count))
 filter_expr = (
-    ";".join(filter_parts) + 
-    f";{amix_labels}amix=inputs={audio_count}:duration=longest:dropout_transition=0,apad=whole_dur={video_dur}[outa]"
+    f"anullsrc=channel_layout=stereo:sample_rate=44100:duration={video_dur}[silence];"
+    + ";".join(filter_parts) + ";"
+    + f"[silence]{amix_inputs}amix=inputs={audio_count + 1}:duration=longest:dropout_transition=0,volume=2[outa]"
 )
 
 output_path = video_path.replace(".mp4", "_voiced.mp4")
 
 cmd = [
-    "ffmpeg", "-y",
+    "ffmpeg", "-y", "-v", "error",
     *inputs,
     "-filter_complex", filter_expr,
     "-map", "0:v",
@@ -74,7 +75,10 @@ cmd = [
 ]
 
 print(f"Mixing {audio_count} audio tracks...")
-subprocess.run(cmd, check=True)
+result = subprocess.run(cmd, capture_output=True)
+if result.returncode != 0:
+    print(f"FFmpeg error:\n{result.stderr.decode()[-500:]}")
+    exit(1)
 
 os.replace(output_path, video_path)
 print(f"Done! Output: {video_path}")

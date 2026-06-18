@@ -28,34 +28,35 @@ lines_turtle = [
 ]
 
 async def gen_audio(filename, text, output_dir):
-    """Stream audio from edge-tts and pipe through ffmpeg to produce valid mp3."""
+    """Stream audio from edge-tts, pipe through ffmpeg to produce valid mp3."""
+    os.makedirs(output_dir, exist_ok=True)
     final_mp3 = os.path.join(output_dir, f"{filename}.mp3")
-    
+
     communicate = edge_tts.Communicate(text, VOICE)
-    
+
     # Collect all audio chunks
     audio_data = b''
     async for chunk in communicate.stream():
         if chunk['type'] == 'audio':
             audio_data += chunk['data']
-    
+
     if not audio_data:
         print(f"  FAIL {filename}: no audio data")
         return
-    
-    # Pipe raw data through ffmpeg as mp3 input
+
+    # Pipe raw data through ffmpeg. Must use -f mp3 for pipe input.
     result = subprocess.run([
-        "ffmpeg", "-y",
+        "ffmpeg", "-y", "-v", "error",
         "-f", "mp3", "-i", "pipe:0",
         "-codec:a", "libmp3lame", "-b:a", "128k",
         "-ar", "44100",
         final_mp3
     ], input=audio_data, capture_output=True)
-    
+
     if result.returncode != 0:
         print(f"  FAIL {filename}: ffmpeg error: {result.stderr.decode()[-200:]}")
         return
-    
+
     dur = float(subprocess.check_output([
         "ffprobe", "-v", "error", "-show_entries", "format=duration",
         "-of", "default=noprint_wrappers=1:nokey=1", final_mp3
@@ -64,15 +65,15 @@ async def gen_audio(filename, text, output_dir):
 
 async def main():
     base = os.path.dirname(os.path.abspath(__file__))
-    
+
     print("=== 乌鸦喝水 ===")
     for fname, text in lines_crow:
         await gen_audio(fname, text, os.path.join(base, "crow-water", "audio"))
-    
+
     print("\n=== 龟兔赛跑 ===")
     for fname, text in lines_turtle:
         await gen_audio(fname, text, os.path.join(base, "turtle-rabbit", "audio"))
-    
+
     print("\nDone!")
 
 asyncio.run(main())
