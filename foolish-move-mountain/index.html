@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Noto Sans SC';
+        src: url('https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYk.woff2') format('woff2');
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Noto Sans SC';
+        src: url('https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYk.woff2') format('woff2');
+        font-weight: 900;
+        font-display: swap;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      body { font-family: 'Noto Sans SC', sans-serif; }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: linear-gradient(180deg, #87CEEB 0%, #E0F0FF 40%, #8BC34A 40%, #689F38 60%, #558B2F 100%);
+        overflow: hidden;
+      }
+
+      #sun {
+        position: absolute; top: 80px; right: 200px;
+        width: 120px; height: 120px;
+        background: radial-gradient(circle, #FFF9C4 20%, #FFD54F 45%, #FFA726 70%, #FF9800 100%);
+        border-radius: 50%;
+        box-shadow: 0 0 60px 20px rgba(255,213,79,0.5), 0 0 120px 40px rgba(255,183,77,0.25);
+      }
+
+      .cloud {
+        position: absolute;
+        background: #fff;
+        border-radius: 50px;
+        opacity: 0.8;
+        filter: blur(1px);
+      }
+      #cloud1 { top: 100px; left: 150px; width: 180px; height: 55px; }
+      #cloud1::before { content:''; position:absolute; top:-25px; left:35px; width:70px; height:70px; background:#fff; border-radius:50%; }
+      #cloud1::after { content:''; position:absolute; top:-18px; left:90px; width:55px; height:55px; background:#fff; border-radius:50%; }
+      #cloud2 { top: 150px; left: 1500px; width: 140px; height: 45px; }
+      #cloud2::before { content:''; position:absolute; top:-22px; left:25px; width:55px; height:55px; background:#fff; border-radius:50%; }
+
+      #mountain1 {
+        position: absolute;
+        bottom: 400px;
+        left: 200px;
+        width: 600px;
+        height: 500px;
+        background: linear-gradient(135deg, #795548 0%, #5D4037 50%, #4E342E 100%);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        border-radius: 0 0 20px 20px;
+      }
+      #mountain1::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 200px;
+        width: 200px;
+        height: 180px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      }
+
+      #mountain2 {
+        position: absolute;
+        bottom: 400px;
+        left: 900px;
+        width: 700px;
+        height: 550px;
+        background: linear-gradient(135deg, #6D4C41 0%, #4E342E 50%, #3E2723 100%);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      }
+      #mountain2::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 250px;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      }
+
+      .tree {
+        position: absolute;
+        bottom: 380px;
+      }
+      .tree-trunk {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 40px;
+        background: linear-gradient(90deg, #5D4037, #795548);
+        border-radius: 2px;
+      }
+      .tree-crown {
+        position: absolute;
+        bottom: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(ellipse, #4CAF50, #388E3C);
+        border-radius: 50% 50% 45% 45%;
+      }
+      #tree1 { left: 100px; }
+      #tree2 { left: 750px; }
+      #tree3 { left: 1700px; }
+
+      #oldman {
+        position: absolute;
+        bottom: 200px;
+        left: 600px;
+        width: 100px;
+        height: 150px;
+        filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+      }
+      #oldman-body {
+        position: absolute;
+        bottom: 30px;
+        left: 20px;
+        width: 60px;
+        height: 80px;
+        background: linear-gradient(180deg, #F5F5DC 0%, #D2B48C 100%);
+        border-radius: 10px 10px 5px 5px;
+        border: 2px solid #8B7355;
+      }
+      #oldman-head {
+        position: absolute;
+        bottom: 95px;
+        left: 25px;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle at 40% 40%, #FFCC80, #FF9800);
+        border-radius: 50%;
+        border: 2px solid #E65100;
+      }
+      #oldman-eye-l, #oldman-eye-r {
+        position: absolute;
+        top: 18px;
+        width: 8px;
+        height: 8px;
+        background: #333;
+        border-radius: 50%;
+      }
+      #oldman-eye-l { left: 12px; }
+      #oldman-eye-r { left: 30px; }
+      #oldman-mouth {
+        position: absolute;
+        top: 30px;
+        left: 18px;
+        width: 15px;
+        height: 8px;
+        background: #D32F2F;
+        border-radius: 0 0 10px 10px;
+      }
+      #oldman-hair {
+        position: absolute;
+        top: -5px;
+        left: 5px;
+        width: 40px;
+        height: 20px;
+        background: #9E9E9E;
+        border-radius: 50% 50% 0 0;
+      }
+      #oldman-beard {
+        position: absolute;
+        top: 35px;
+        left: 15px;
+        width: 20px;
+        height: 25px;
+        background: #9E9E9E;
+        border-radius: 0 0 10px 10px;
+      }
+      #oldman-arm-l, #oldman-arm-r {
+        position: absolute;
+        bottom: 50px;
+        width: 15px;
+        height: 50px;
+        background: linear-gradient(180deg, #F5F5DC, #D2B48C);
+        border-radius: 8px;
+        transform-origin: top center;
+      }
+      #oldman-arm-l { left: 5px; transform: rotate(30deg); }
+      #oldman-arm-r { right: 5px; transform: rotate(-30deg); }
+      #oldman-leg-l, #oldman-leg-r {
+        position: absolute;
+        bottom: 0;
+        width: 18px;
+        height: 35px;
+        background: linear-gradient(180deg, #8D6E63, #5D4037);
+        border-radius: 5px;
+      }
+      #oldman-leg-l { left: 25px; }
+      #oldman-leg-r { left: 55px; }
+
+      #pickaxe {
+        position: absolute;
+        bottom: 180px;
+        left: 680px;
+        width: 80px;
+        height: 80px;
+        transform-origin: bottom center;
+      }
+      #pickaxe-handle {
+        position: absolute;
+        bottom: 0;
+        left: 35px;
+        width: 10px;
+        height: 60px;
+        background: linear-gradient(90deg, #8D6E63, #A1887F);
+        border-radius: 3px;
+        transform: rotate(-15deg);
+      }
+      #pickaxe-head {
+        position: absolute;
+        bottom: 55px;
+        left: 10px;
+        width: 60px;
+        height: 15px;
+        background: linear-gradient(180deg, #757575, #424242);
+        border-radius: 3px 8px 8px 3px;
+        transform: rotate(-15deg);
+      }
+
+      #title {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 96px;
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 4px 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.3);
+        letter-spacing: 20px;
+        opacity: 0;
+        z-index: 10;
+      }
+      #subtitle {
+        position: absolute;
+        top: calc(50% + 80px);
+        left: 50%;
+        font-size: 32px;
+        color: rgba(255,255,255,0.8);
+        letter-spacing: 8px;
+        opacity: 0;
+        z-index: 10;
+      }
+
+      #moral {
+        position: absolute;
+        bottom: 80px;
+        left: 50%;
+        font-size: 32px;
+        font-weight: 700;
+        color: #4E342E;
+        background: rgba(255,255,255,0.9);
+        padding: 16px 40px;
+        border-radius: 20px;
+        opacity: 0;
+        z-index: 10;
+        white-space: nowrap;
+      }
+
+      #dust {
+        position: absolute;
+        bottom: 180px;
+        left: 650px;
+        width: 100px;
+        height: 40px;
+        opacity: 0;
+      }
+      .dust-particle {
+        position: absolute;
+        background: rgba(139,119,101,0.6);
+        border-radius: 50%;
+      }
+      #d1 { width: 8px; height: 8px; bottom: 5px; left: 10px; }
+      #d2 { width: 6px; height: 6px; bottom: 15px; left: 25px; }
+      #d3 { width: 10px; height: 10px; bottom: 8px; left: 40px; }
+      #d4 { width: 7px; height: 7px; bottom: 18px; left: 55px; }
+      #d5 { width: 9px; height: 9px; bottom: 3px; left: 70px; }
+
+      #progress-bar {
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        width: 400px;
+        height: 20px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 10px;
+        border: 2px solid #4E342E;
+        opacity: 0;
+        z-index: 10;
+      }
+      #progress-fill {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 0;
+        height: 16px;
+        background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        border-radius: 8px;
+      }
+
+      .ground-shadow {
+        position: absolute;
+        background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%);
+        border-radius: 50%;
+      }
+      #oldman-shadow {
+        bottom: 180px;
+        left: 600px;
+        width: 80px;
+        height: 15px;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-yg01" id="stage" data-composition-id="foolish-move-mountain" data-start="0" data-duration="25" data-width="1920" data-height="1080">
+      <!-- Title -->
+      <div data-hf-id="hf-yg02" id="title" class="clip" data-start="0" data-duration="3.5" data-track-index="1">愚公移山</div>
+      <div data-hf-id="hf-yg03" id="subtitle" class="clip" data-start="0.5" data-duration="3" data-track-index="22">The Foolish Old Man Moves Mountains</div>
+
+      <!-- Sky -->
+      <div data-hf-id="hf-yg04" id="sun" class="clip" data-start="0" data-duration="25" data-track-index="0"></div>
+      <div data-hf-id="hf-yg05" id="cloud1" class="clip" data-start="0" data-duration="25" data-track-index="20"></div>
+      <div data-hf-id="hf-yg06" id="cloud2" class="clip" data-start="0" data-duration="25" data-track-index="21"></div>
+
+      <!-- Mountains -->
+      <div data-hf-id="hf-yg07" id="mountain1" class="clip" data-start="2" data-duration="23" data-track-index="14"></div>
+      <div data-hf-id="hf-yg08" id="mountain2" class="clip" data-start="2" data-duration="23" data-track-index="15"></div>
+
+      <!-- Trees -->
+      <div data-hf-id="hf-yg09" id="tree1" class="tree clip" data-start="2" data-duration="23" data-track-index="16">
+        <div data-hf-id="hf-yg10" class="tree-trunk"></div>
+        <div data-hf-id="hf-yg11" class="tree-crown"></div>
+      </div>
+      <div data-hf-id="hf-yg12" id="tree2" class="tree clip" data-start="2" data-duration="23" data-track-index="17">
+        <div data-hf-id="hf-yg13" class="tree-trunk"></div>
+        <div data-hf-id="hf-yg14" class="tree-crown"></div>
+      </div>
+      <div data-hf-id="hf-yg15" id="tree3" class="tree clip" data-start="2" data-duration="23" data-track-index="18">
+        <div data-hf-id="hf-yg16" class="tree-trunk"></div>
+        <div data-hf-id="hf-yg17" class="tree-crown"></div>
+      </div>
+
+      <!-- Old Man -->
+      <div data-hf-id="hf-yg18" id="oldman" class="clip" data-start="3.5" data-duration="21.5" data-track-index="19">
+        <div data-hf-id="hf-yg19" id="oldman-head">
+          <div data-hf-id="hf-yg20" id="oldman-eye-l"></div>
+          <div data-hf-id="hf-yg21" id="oldman-eye-r"></div>
+          <div data-hf-id="hf-yg22" id="oldman-mouth"></div>
+          <div data-hf-id="hf-yg23" id="oldman-hair"></div>
+          <div data-hf-id="hf-yg24" id="oldman-beard"></div>
+        </div>
+        <div data-hf-id="hf-yg25" id="oldman-body"></div>
+        <div data-hf-id="hf-yg26" id="oldman-arm-l"></div>
+        <div data-hf-id="hf-yg27" id="oldman-arm-r"></div>
+        <div data-hf-id="hf-yg28" id="oldman-leg-l"></div>
+        <div data-hf-id="hf-yg29" id="oldman-leg-r"></div>
+      </div>
+
+      <!-- Pickaxe -->
+      <div data-hf-id="hf-yg30" id="pickaxe" class="clip" data-start="5" data-duration="20" data-track-index="23">
+        <div data-hf-id="hf-yg31" id="pickaxe-handle"></div>
+        <div data-hf-id="hf-yg32" id="pickaxe-head"></div>
+      </div>
+
+      <!-- Dust particles -->
+      <div data-hf-id="hf-yg33" id="dust" class="clip" data-start="6" data-duration="19" data-track-index="24">
+        <div data-hf-id="hf-yg34" id="d1" class="dust-particle"></div>
+        <div data-hf-id="hf-yg35" id="d2" class="dust-particle"></div>
+        <div data-hf-id="hf-yg36" id="d3" class="dust-particle"></div>
+        <div data-hf-id="hf-yg37" id="d4" class="dust-particle"></div>
+        <div data-hf-id="hf-yg38" id="d5" class="dust-particle"></div>
+      </div>
+
+      <!-- Progress bar -->
+      <div data-hf-id="hf-yg39" id="progress-bar" class="clip" data-start="8" data-duration="14.5" data-track-index="25">
+        <div data-hf-id="hf-yg40" id="progress-fill"></div>
+      </div>
+
+      <!-- Moral -->
+      <div data-hf-id="hf-yg41" id="moral" class="clip" data-start="22" data-duration="3" data-track-index="26">只要有决心，就没有克服不了的困难</div>
+
+      <!-- Old man shadow -->
+      <div data-hf-id="hf-yg42" id="oldman-shadow" class="ground-shadow clip" data-start="3.5" data-duration="21.5" data-track-index="27"></div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Seeded PRNG for deterministic renders
+      function mulberry32(a) {
+        return function() {
+          a |= 0; a = a + 0x6D2B79F5 | 0;
+          var t = Math.imul(a ^ a >>> 15, 1 | a);
+          t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+          return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+      }
+      var rand = mulberry32(42);
+
+      // ===== Sun glow pulse =====
+      tl.fromTo("#sun", { boxShadow: "0 0 60px 20px rgba(255,213,79,0.5), 0 0 120px 40px rgba(255,183,77,0.25)" },
+        { boxShadow: "0 0 80px 30px rgba(255,213,79,0.6), 0 0 140px 50px rgba(255,183,77,0.35)", duration: 2, ease: "sine.inOut", yoyo: true, repeat: 11 }, 0);
+
+      // ===== Title (0-3.5s) =====
+      tl.fromTo("#title", { xPercent: -50, yPercent: -50, opacity: 0, scale: 0.3, rotation: -5 },
+        { xPercent: -50, yPercent: -50, opacity: 1, scale: 1, rotation: 0, duration: 1.2, ease: "elastic.out(1, 0.5)" }, 0);
+      tl.fromTo("#subtitle", { xPercent: -50, opacity: 0, y: 40 },
+        { xPercent: -50, opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 0.6);
+      tl.to("#title", { xPercent: -50, yPercent: -50, y: -8, duration: 1.5, ease: "sine.inOut", overwrite: "auto" }, 1.5);
+      tl.to("#title", { xPercent: -50, yPercent: -50, opacity: 0, y: -60, scale: 0.8, duration: 0.7, ease: "power3.in", overwrite: "auto" }, 2.8);
+      tl.to("#subtitle", { xPercent: -50, opacity: 0, y: -40, duration: 0.6, ease: "power2.in" }, 2.8);
+      // Hard kill for title
+      tl.set("#title", { opacity: 0 }, 3.5);
+      tl.set("#subtitle", { opacity: 0 }, 3.5);
+
+      // ===== Clouds drift =====
+      tl.to("#cloud1", { x: 60, duration: 25, ease: "sine.inOut", yoyo: true, repeat: 0 }, 0);
+      tl.to("#cloud2", { x: -50, duration: 28, ease: "sine.inOut", yoyo: true, repeat: 0 }, 0);
+
+      // ===== Mountains appear (2-3s) =====
+      tl.fromTo("#mountain1", { y: 600, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, 2);
+      tl.fromTo("#mountain2", { y: 600, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, 2.3);
+
+      // ===== Trees appear =====
+      tl.fromTo("#tree1", { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 2.5);
+      tl.fromTo("#tree2", { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 2.7);
+      tl.fromTo("#tree3", { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 2.9);
+
+      // ===== Old man appears (3.5-5s) =====
+      tl.fromTo("#oldman", { x: -200, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "power3.out" }, 3.5);
+      tl.fromTo("#oldman-shadow", { x: -200, opacity: 0 }, { x: 0, opacity: 0.6, duration: 1.2, ease: "power3.out" }, 3.5);
+
+      // Old man looks at mountains - head turn
+      tl.to("#oldman-head", { rotation: -15, duration: 0.5, ease: "power2.inOut" }, 4.8);
+      tl.to("#oldman-head", { rotation: 15, duration: 0.5, ease: "power2.inOut" }, 5.5);
+      tl.to("#oldman-head", { rotation: 0, duration: 0.3, ease: "power2.out" }, 6.2);
+
+      // ===== Pickaxe appears and swinging (5-20s) =====
+      tl.fromTo("#pickaxe", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 5);
+
+      // Pickaxe swinging animation - repeated strikes
+      var swingStart = 6;
+      for (var i = 0; i < 12; i++) {
+        var t = swingStart + i * 1.2;
+        tl.to("#pickaxe", { rotation: -45, y: -30, duration: 0.3, ease: "power2.in" }, t);
+        tl.to("#pickaxe", { rotation: 30, y: 10, duration: 0.2, ease: "power3.out" }, t + 0.3);
+        tl.to("#pickaxe", { rotation: 0, y: 0, duration: 0.3, ease: "elastic.out(1, 0.5)" }, t + 0.5);
+
+        // Old man arm movement with pickaxe
+        tl.to("#oldman-arm-r", { rotation: -60, duration: 0.3, ease: "power2.in" }, t);
+        tl.to("#oldman-arm-r", { rotation: -30, duration: 0.2, ease: "power3.out" }, t + 0.3);
+        tl.to("#oldman-arm-r", { rotation: -30, duration: 0.3, ease: "power2.out" }, t + 0.5);
+
+        // Dust particles on impact
+        tl.set("#dust", { opacity: 0.8 }, t + 0.3);
+        tl.to("#d1", { y: rand() * -30 - 10, x: rand() * 40 - 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t + 0.3);
+        tl.to("#d2", { y: rand() * -25 - 15, x: rand() * 35 - 15, opacity: 0, duration: 0.4, ease: "power2.out" }, t + 0.35);
+        tl.to("#d3", { y: rand() * -35 - 10, x: rand() * 45 - 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t + 0.3);
+        tl.to("#d4", { y: rand() * -20 - 12, x: rand() * 30 - 15, opacity: 0, duration: 0.45, ease: "power2.out" }, t + 0.4);
+        tl.to("#d5", { y: rand() * -28 - 8, x: rand() * 40 - 20, opacity: 0, duration: 0.5, ease: "power2.out" }, t + 0.35);
+
+        // Reset dust particles
+        tl.set("#d1", { y: 0, x: 0, opacity: 0.6 }, t + 0.8);
+        tl.set("#d2", { y: 0, x: 0, opacity: 0.6 }, t + 0.8);
+        tl.set("#d3", { y: 0, x: 0, opacity: 0.6 }, t + 0.8);
+        tl.set("#d4", { y: 0, x: 0, opacity: 0.6 }, t + 0.8);
+        tl.set("#d5", { y: 0, x: 0, opacity: 0.6 }, t + 0.8);
+      }
+
+      // ===== Progress bar shows mountain shrinking (8-22s) =====
+      tl.fromTo("#progress-bar", { opacity: 0, y: 20, xPercent: -50 }, { opacity: 1, y: 0, xPercent: -50, duration: 0.5, ease: "back.out(1.5)" }, 8);
+      // Hard kill for progress bar
+      tl.set("#progress-bar", { opacity: 0 }, 22);
+
+      // Mountain slowly shrinks as work progresses
+      tl.to("#mountain1", { scaleY: 0.7, y: 80, duration: 14, ease: "linear" }, 8);
+      tl.to("#mountain2", { scaleY: 0.75, y: 70, duration: 14, ease: "linear" }, 8);
+
+      // Progress bar fills up
+      tl.to("#progress-fill", { width: 396, duration: 14, ease: "linear" }, 8);
+
+      // ===== Old man breathing/idle =====
+      tl.to("#oldman-body", { scaleY: 1.03, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 12 }, 5);
+
+      // ===== Victory pose (20-22s) =====
+      // Stop pickaxe
+      tl.to("#pickaxe", { opacity: 0, y: -50, duration: 0.5, ease: "power2.in" }, 20);
+      tl.set("#dust", { opacity: 0 }, 20);
+
+      // Old man raises arms in triumph
+      tl.to("#oldman-arm-l", { rotation: -120, duration: 0.5, ease: "back.out(2)" }, 20.5);
+      tl.to("#oldman-arm-r", { rotation: 120, duration: 0.5, ease: "back.out(2)" }, 20.5);
+
+      // Happy hop
+      tl.to("#oldman", { y: -30, duration: 0.2, ease: "power2.out" }, 21);
+      tl.to("#oldman", { y: 0, duration: 0.3, ease: "bounce.out" }, 21.2);
+
+      // Progress bar fades
+      tl.to("#progress-bar", { opacity: 0, y: -20, duration: 0.5, ease: "power2.in" }, 21.5);
+
+      // ===== Moral (22-25s) =====
+      tl.fromTo("#moral", { xPercent: -50, opacity: 0, y: 40, scale: 0.9 },
+        { xPercent: -50, opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "back.out(1.5)" }, 22);
+      tl.to("#moral", { boxShadow: "0 0 30px rgba(78,52,46,0.3), 0 8px 32px rgba(0,0,0,0.1)", duration: 0.8, ease: "power2.out" }, 23);
+
+      window.__timelines["foolish-move-mountain"] = tl;
+    </script>
+  </body>
+</html>
